@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SK Chatbot Gaming Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f4c75 50%, #3282b8 75%, #bbe1fa 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        .game-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .game-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffd700;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .game-area {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            color: #333;
+            display: none;
+        }
+
+        .game-area.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .game-header h2 {
+            font-size: 2rem;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 1rem;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .output {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 25px;
+            border-left: 4px solid #667eea;
+            font-family: 'SF Mono', Monaco, monospace;
+            min-height: 60px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .score {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 700;
+            margin: 15px 0;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .question {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #2d3748;
+            padding: 20px;
+            background: linear-gradient(135deg, #edf2f7, #e2e8f0);
+            border-radius: 12px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .attempts {
+            font-size: 1rem;
+            color: #718096;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+
+            .game-card {
+                padding: 25px;
+            }
+
+            .game-area {
+                padding: 25px;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SK Chatbot Gaming Hub</h1>
+            <p>Welcome to the ultimate interactive gaming experience!</p>
+        </div>
+
+        <div id="menu" class="games-grid">
+            <div class="game-card" onclick="showGame('capitals')">
+                <span class="game-icon">🏛️</span>
+                <h3>Capitals Quiz</h3>
+                <p>Test your knowledge of world capitals with our challenging quiz system!</p>
+            </div>
+
+            <div class="game-card" onclick="showGame('temperature')">
+                <span class="game-icon">🌡️</span>
+                <h3>Temperature Converter</h3>
+                <p>Convert temperatures between Celsius and Fahrenheit instantly!</p>
+            </div>
+
+            <div class="game-card" onclick="showGame('calculator')">
+                <span class="game-icon">🧮</span>
+                <h3>Smart Calculator</h3>
+                <p>Advanced calculator with simple and compound interest calculations!</p>
+            </div>
+
+            <div class="game-card" onclick="showGame('fortune')">
+                <span class="game-icon">🔮</span>
+                <h3>Magic 8 Ball</h3>
+                <p>Ask the mystical 8-ball your burning yes/no questions!</p>
+            </div>
+
+            <div class="game-card" onclick="showGame('rps')">
+                <span class="game-icon">✂️</span>
+                <h3>Rock Paper Scissors</h3>
+                <p>Classic game with real-time scoring and win percentage tracking!</p>
+            </div>
+
+            <div class="game-card" onclick="showGame('guessing')">
+                <span class="game-icon">🎯</span>
+                <h3>Number Guessing Game</h3>
+                <p>Single or multiplayer number guessing challenge!</p>
+            </div>
+
+            <div class="game-card" onclick="showGame('mood')">
+                <span class="game-icon">😊</span>
+                <h3>Mood Food Suggester</h3>
+                <p>Get personalized food recommendations based on your current mood!</p>
+            </div>
+
+            <div class="game-card" onclick="showGame('password')">
+                <span class="game-icon">🔒</span>
+                <h3>Password Strength Checker</h3>
+                <p>Analyze and improve your password security with real-time feedback!</p>
+            </div>
+
+            <div class="game-card" onclick="showGame('word')">
+                <span class="game-icon">📝</span>
+                <h3>Word Analyzer</h3>
+                <p>Deep analysis of text with vowel/consonant counts and word frequency!</p>
+            </div>
+        </div>
+
+        <!-- Capitals Quiz Game -->
+        <div id="capitals" class="game-area">
+            <div class="game-header">
+                <h2>🏛️ Capitals Quiz</h2>
+                <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+            </div>
+            <div id="capitals-content">
+                <div class="question" id="capitals-question">Click Start to begin!</div>
+                <div class="attempts" id="capitals-attempts"></div>
+                <div class="input-group">
+                    <input type="text" id="capitals-input" placeholder="Enter the capital city...">
+                </div>
+                <button class="btn" onclick="startCapitalsQuiz()">Start Quiz</button>
+                <button class="btn" onclick="submitCapitalsAnswer()" id="capitals-submit" disabled>Submit Answer</button>
+                <div class="score" id="capitals-score">Score: 0 / 150</div>
+                <div class="output" id="capitals-output">Welcome to the Capitals Quiz! You get 3 attempts per question: 15 points for first try, 10 for second, 5 for third.</div>
+            </div>
+        </div>
+
+        <!-- Temperature Converter -->
+        <div id="temperature" class="game-area">
+            <div class="game-header">
+                <h2>🌡️ Temperature Converter</h2>
+                <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+            </div>
+            <div class="input-group">
+                <label>Convert from:</label>
+                <select id="temp-from">
+                    <option value="celsius">Celsius</option>
+                    <option value="fahrenheit">Fahrenheit</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Temperature:</label>
+                <input type="number" id="temp-input" placeholder="Enter temperature...">
+            </div>
+            <button class="btn" onclick="convertTemperature()">Convert</button>
+            <div class="output" id="temp-output">Enter a temperature to convert</div>
+        </div>
+
+        <!-- Calculator -->
+        <div id="calculator" class="game-area">
+            <div class="game-header">
+                <h2>🧮 Smart Calculator</h2>
+                <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+            </div>
+            <div class="input-group">
+                <label>Calculator Type:</label>
+                <select id="calc-type" onchange="showCalculatorType()">
+                    <option value="basic">Basic Calculator</option>
+                    <option value="simple">Simple Interest</option>
+                    <option value="compound">Compound Interest</option>
+                </select>
+            </div>
+            <div id="basic-calc">
+                <div class="input-group">
+                    <label>First Number:</label>
+                    <input type="number" id="num1">
+                </div>
+                <div class="input-group">
+                    <label>Second Number:</label>
+                    <input type="number" id="num2">
+                </div>
+                <div class="input-group">
+                    <label>Operation:</label>
+                    <select id="operation">
+                        <option value="+">Addition (+)</option>
+                        <option value="-">Subtraction (-)</option>
+                        <option value="*">Multiplication (×)</option>
+                        <option value="/">Division (÷)</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="calculateBasic()">Calculate</button>
+            </div>
+            <div id="interest-calc" style="display: none;">
+                <div class="input-group">
+                    <label>Principal Amount:</label>
+                    <input type="number" id="principal">
+                </div>
+                <div class="input-group">
+                    <label>Interest Rate (%):</label>
+                    <input type="number" id="rate">
+                </div>
+                <div class="input-group">
+                    <label>Years:</label>
+                    <input type="number" id="years">
+                </div>
+                <button class="btn" onclick="calculateInterest()">Calculate</button>
+            </div>
+            <div class="output" id="calc-output">Select calculator type and enter values</div>
+        </div>
+
+        <!-- Fortune Teller -->
+        <div id="fortune" class="game-area">
+            <div class="game-header">
+                <h2>🔮 Magic 8 Ball</h2>
+                <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+            </div>
+            <div class="input-group">
+                <label>Ask a yes/no question:</label>
+                <input type="text" id="fortune-input" placeholder="What would you like to know?">
+            </div>
+            <button class="btn" onclick="askFortune()">Ask the Magic 8 Ball</button>
+            <div class="output" id="fortune-output">Ask the Magic 8 Ball a yes/no question!</div>
+        </div>
+
+        <!-- Rock Paper Scissors -->
+        <div id="rps" class="game-area">
+            <div class="game-header">
+                <h2>✂️ Rock Paper Scissors</h2>
+                <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+            </div>
+            <div class="input-group">
+                <label>Choose your move:</label>
+                <select id="rps-choice">
+                    <option value="rock">🪨 Rock</option>
+                    <option value="paper">📄 Paper</option>
+                    <option value="scissors">✂️ Scissors</option>
+                </select>
+            </div>
+            <button class="btn" onclick="playRPS()">Play</button>
+            <button class="btn" onclick="resetRPS()">Reset Game</button>
+            <div class="score" id="rps-score">Your Score: 0 | Computer Score: 0</div>
+            <div class="output" id="rps-output">Choose your move and click Play!</div>
+        </div>
+
+        <!-- Number Guessing Game -->
+        <div id="guessing" class="game-area">
+            <div class="game-header">
+                <h2>🎯 Number Guessing Game</h2>
+                <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+            </div>
+            <div class="question" id="guessing-question">I'm thinking of a number between 1 and 100...</div>
+            <div class="input-group">
+                <label>Your guess:</label>
+                <input type="number" id="guessing-input" min="1" max="100" placeholder="Enter a number 1-100">
+            </div>
+            <button class="btn" onclick="startGuessingGame()">New Game</button>
+            <button class="btn" onclick="makeGuess()" id="guess-btn" disabled>Make Guess</button>
+            <div class="output" id="guessing-output">Click 'New Game' to start!</div>
+        </div>
+
+        <!-- Mood Suggester -->
+        <div id="mood" class="game-area">
+            <div class="game-header">
+                <h2>😊 Mood Food Suggester</h2>
+                <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+            </div>
+            <div class="input-group">
+                <label>How are you feeling today?</label>
+                <select id="mood-select">
+                    <option value="">Select your mood...</option>
+                    <option value="happy">😊 Happy</option>
+                    <option value="sad">😢 Sad</option>
+                    <option value="tired">😴 Tired</option>
+                    <option value="angry">😠 Angry</option>
+                    <option value="bored">😐 Bored</option>
+                    <option value="excited">🤩 Excited</option>
+                    <option value="stressed">😰 Stressed</option>
+                </select>
+            </div>
+            <button class="btn" onclick="suggestMood()">Get Suggestion</button>
+            <div class="output" id="mood-output">Select your mood to get a personalized food suggestion!</div>
+        </div>
+
+        <!-- Password Checker -->
+        <div id="password" class="game-area">
+            <div class="game-header">
+                <h2>🔒 Password Strength Checker</h2>
+                <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+            </div>
+            <div class="input-group">
+                <label>Enter your password:</label>
+                <input type="password" id="password-input" placeholder="Enter password to check strength">
+            </div>
+            <button class="btn" onclick="checkPassword()">Check Strength</button>
+            <div class="output" id="password-output">Enter a password to check its strength. A strong password should have at least 8 characters, include numbers and special characters.</div>
+        </div>
+
+        <!-- Word Analyzer -->
+        <div id="word" class="game-area">
+            <div class="game-header">
+                <h2>📝 Word Analyzer</h2>
+                <button class="back-btn" onclick="showMenu()">← Back to Menu</button>
+            </div>
+            <div class="input-group">
+                <label>Enter text to analyze:</label>
+                <textarea id="word-input" rows="4" placeholder="Enter a sentence or paragraph to analyze..."></textarea>
+            </div>
+            <button class="btn" onclick="analyzeText()">Analyze Text</button>
+            <div class="output" id="word-output">Enter some text to analyze vowels, consonants, and word frequency!</div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentGame = null;
+        let gameData = {};
+
+        // Countries and capitals data
+        const countries = ["Brazil", "Canada", "Japan", "France", "Australia", "Egypt", "Germany", "India", "Mexico", "Norway", "Spain", "South Korea", "Kenya", "Sweden", "United Kingdom", "Argentina", "Thailand", "New Zealand", "Nigeria", "Vietnam", "Greece", "Russia", "Italy", "Peru", "Turkey", "South Africa", "Philippines", "China", "Finland", "Poland", "Denmark", "Ireland", "Chile", "Czech Republic", "Netherlands", "Malaysia", "Switzerland", "Portugal", "Indonesia", "Ukraine", "Belgium", "Morocco", "Hungary", "Romania", "Colombia", "Pakistan", "Saudi Arabia", "Iceland", "Singapore", "Israel"];
+        
+        const capitals = ["Brasilia", "Ottawa", "Tokyo", "Paris", "Canberra", "Cairo", "Berlin", "New Delhi", "Mexico City", "Oslo", "Madrid", "Seoul", "Nairobi", "Stockholm", "London", "Buenos Aires", "Bangkok", "Wellington", "Abuja", "Hanoi", "Athens", "Moscow", "Rome", "Lima", "Ankara", "Pretoria", "Manila", "Beijing", "Helsinki", "Warsaw", "Copenhagen", "Dublin", "Santiago", "Prague", "Amsterdam", "Kuala Lumpur", "Bern", "Lisbon", "Jakarta", "Kyiv", "Brussels", "Rabat", "Budapest", "Bucharest", "Bogotá", "Islamabad", "Riyadh", "Reykjavik", "Singapore", "Jerusalem"];
+
+        // Show/hide games
+        function showGame(gameId) {
+            document.getElementById('menu').style.display = 'none';
+            document.querySelectorAll('.game-area').forEach(area => area.classList.remove('active'));
+            document.getElementById(gameId).classList.add('active');
+            currentGame = gameId;
+        }
+
+        function showMenu() {
+            document.getElementById('menu').style.display = 'grid';
+            document.querySelectorAll('.game-area').forEach(area => area.classList.remove('active'));
+            currentGame = null;
+        }
+
+        // Capitals Quiz
+        function startCapitalsQuiz() {
+            gameData.capitals = {
+                score: 0,
+                questionCount: 1,
+                currentCountry: '',
+                attempts: 0,
+                askedCountries: []
+            };
+            nextCapitalsQuestion();
+            document.getElementById('capitals-submit').disabled = false;
+        }
+
+        function nextCapitalsQuestion() {
+            if (gameData.capitals.questionCount > 10) {
+                document.getElementById('capitals-output').innerHTML = 
+                    `🎉 Quiz completed! Final score: ${gameData.capitals.score} out of 150 points (${(gameData.capitals.score/150*100).toFixed(1)}%)`;
+                document.getElementById('capitals-submit').disabled = true;
+                return;
+            }
+
+            let country;
+            do {
+                country = countries[Math.floor(Math.random() * countries.length)];
+            } while (gameData.capitals.askedCountries.includes(country));
+
+            gameData.capitals.askedCountries.push(country);
+            gameData.capitals.currentCountry = country;
+            gameData.capitals.attempts = 0;
+
+            document.getElementById('capitals-question').textContent = 
+                `Question ${gameData.capitals.questionCount}: What is the capital of ${country}?`;
+            document.getElementById('capitals-attempts').textContent = '';
+            document.getElementById('capitals-input').value = '';
+            document.getElementById('capitals-input').focus();
+        }
+
+        function submitCapitalsAnswer() {
+            const input = document.getElementById('capitals-input');
+            const guess = input.value.trim();
+            const countryIndex = countries.indexOf(gameData.capitals.currentCountry);
+            const correctAnswer = capitals[countryIndex];
+
+            gameData.capitals.attempts++;
+
+            if (guess.toLowerCase() === correctAnswer.toLowerCase()) {
+                const points = 20 - (gameData.capitals.attempts * 5);
+                gameData.capitals.score += points;
+                
+                let message = '';
+                if (gameData.capitals.attempts === 1) message = '🎉 Excellent!';
+                else if (gameData.capitals.attempts === 2) message = '👏 Well done!';
+                else message = '✅ Correct!';
+
+                document.getElementById('capitals-output').innerHTML = 
+                    `${message} +${points} points<br>Current total: ${gameData.capitals.score} points`;
+                
+                gameData.capitals.questionCount++;
+                setTimeout(nextCapitalsQuestion, 2000);
+            } else {
+                if (gameData.capitals.attempts < 3) {
+                    const nextPoints = 20 - ((gameData.capitals.attempts + 1) * 5);
+                    document.getElementById('capitals-attempts').textContent = 
+                        `Attempt ${gameData.capitals.attempts}/3 - Try again! (Next attempt worth ${nextPoints} points)`;
+                    input.value = '';
+                    input.focus();
+                } else {
+                    document.getElementById('capitals-output').innerHTML = 
+                        `❌ The correct answer was ${correctAnswer}. +0 points<br>Current total: ${gameData.capitals.score} points`;
+                    gameData.capitals.questionCount++;
+                    setTimeout(nextCapitalsQuestion, 2000);
+                }
+            }
+
+            document.getElementById('capitals-score').textContent = 
+                `Score: ${gameData.capitals.score} / 150`;
+        }
+
+        // Handle Enter key for capitals quiz
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && currentGame === 'capitals') {
+                submitCapitalsAnswer();
+            }
+        });
+
+        // Temperature Converter
+        function convertTemperature() {
+            const temp = parseFloat(document.getElementById('temp-input').value);
+            const from = document.getElementById('temp-from').value;
+            
+            if (isNaN(temp)) {
+                document.getElementById('temp-output').textContent = 'Please enter a valid temperature';
+                return;
+            }
+
+            let result, unit;
+            if (from === 'celsius') {
+                result = (temp * 9/5) + 32;
+                unit = 'Fahrenheit';
+            } else {
+                result = (temp - 32) * 5/9;
+                unit = 'Celsius';
+            }
+
+            document.getElementById('temp-output').innerHTML = 
+                `🌡️ ${temp}° ${from === 'celsius' ? 'Celsius' : 'Fahrenheit'} = <strong>${result.toFixed(2)}° ${unit}</strong>`;
+        }
+
+        // Calculator
+        function showCalculatorType() {
+            const type = document.getElementById('calc-type').value;
+            const basicCalc = document.getElementById('basic-calc');
+            const interestCalc = document.getElementById('interest-calc');
+
+            if (type === 'basic') {
+                basicCalc.style.display = 'block';
+                interestCalc.style.display = 'none';
+            } else {
+                basicCalc.style.display = 'none';
+                interestCalc.style.display = 'block';
+            }
+        }
+
+        function calculateBasic() {
+            const num1 = parseFloat(document.getElementById('num1').value);
+            const num2 = parseFloat(document.getElementById('num2').value);
+            const operation = document.getElementById('operation').value;
+
+            if (isNaN(num1) || isNaN(num2)) {
+                document.getElementById('calc-output').textContent = 'Please enter valid numbers';
+                return;
+            }
+
+            let result;
+            switch (operation) {
+                case '+': result = num1 + num2; break;
+                case '-': result = num1 - num2; break;
+                case '*': result = num1 * num2; break;
+                case '/': 
+                    if (num2 === 0) {
+                        document.getElementById('calc-output').textContent = 'Cannot divide by zero';
+                        return;
+                    }
+                    result = num1 / num2; 
+                    break;
+            }
+
+            document.getElementById('calc-output').innerHTML = 
+                `🧮 <strong>${num1} ${operation} ${num2} = ${result}</strong>`;
+        }
+
+        function calculateInterest() {
+            const principal = parseFloat(document.getElementById('principal').value);
+            const rate = parseFloat(document.getElementById('rate').value);
+            const years = parseFloat(document.getElementById('years').value);
+            const type = document.getElementById('calc-type').value;
+
+            if (isNaN(principal) || isNaN(rate) || isNaN(years)) {
+                document.getElementById('calc-output').textContent = 'Please enter valid numbers';
+                return;
+            }
+
+            let result;
+            if (type === 'simple') {
+                const interest = (principal * rate * years) / 100;
+                result = principal + interest;
+                document.getElementById('calc-output').innerHTML = 
+                    `💰 <strong>Simple Interest:</strong> ${interest.toFixed(2)}<br><strong>Total Amount:</strong> ${result.toFixed(2)}`;
+            } else {
+                result = principal * Math.pow(1 + rate/100, years);
+                const interest = result - principal;
+                document.getElementById('calc-output').innerHTML = 
+                    `💰 <strong>Compound Interest:</strong> ${interest.toFixed(2)}<br><strong>Total Amount:</strong> ${result.toFixed(2)}`;
+            }
+        }
+
+        // Fortune Teller
+        function askFortune() {
+            const question = document.getElementById('fortune-input').value.trim();
+            if (!question) {
+                document.getElementById('fortune-output').textContent = 'Please ask a question first!';
+                return;
+            }
+
+            const fortunes = [
+                'Yes', 'No', 'Likely', 'Maybe', 'Absolutely', 
+                'Do not count on it', 'Stars say no', 'Count on it', 
+                'Ask again later', "It's okay", "Can't say", 'Possibly'
+            ];
+
+            const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+            document.getElementById('fortune-output').innerHTML = 
+                `🔮 <strong>The Magic 8 Ball says:</strong> ${randomFortune}`;
+            document.getElementById('fortune-input').value = '';
+        }
+
+        // Rock Paper Scissors
+        if (!gameData.rps) {
+            gameData.rps = { playerScore: 0, computerScore: 0 };
+        }
+
+        function playRPS() {
+            const playerChoice = document.getElementById('rps-choice').value;
+            const choices = ['rock', 'paper', 'scissors'];
+            const computerChoice = choices[Math.floor(Math.random() * choices.length)];
+
+            const choiceEmojis = { rock: '🪨', paper: '📄', scissors: '✂️' };
+
+            let result = '';
+            if (playerChoice === computerChoice) {
+                result = "🤝 It's a tie!";
+            } else if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'paper' && computerChoice === 'rock') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper')
+            ) {
+                result = '🎉 You win!';
+                gameData.rps.playerScore++;
+            } else {
+                result = '🤖 Computer wins!';
+                gameData.rps.computerScore++;
+            }
+
+            document.getElementById('rps-output').innerHTML = 
+                `<strong>You:</strong> ${choiceEmojis[playerChoice]} ${playerChoice}<br><strong>Computer:</strong> ${choiceEmojis[computerChoice]} ${computerChoice}<br><strong>${result}</strong>`;
+
+            const total = gameData.rps.playerScore + gameData.rps.computerScore;
+            const playerPercent = total ? Math.round((gameData.rps.playerScore / total) * 100) : 0;
+            const computerPercent = total ? Math.round((gameData.rps.computerScore / total) * 100) : 0;
+
+            document.getElementById('rps-score').innerHTML = 
+                `Your Score: ${gameData.rps.playerScore} (${playerPercent}%) | Computer Score: ${gameData.rps.computerScore} (${computerPercent}%)`;
+        }
+
+        function resetRPS() {
+            gameData.rps = { playerScore: 0, computerScore: 0 };
+            document.getElementById('rps-score').textContent = 'Your Score: 0 | Computer Score: 0';
+            document.getElementById('rps-output').textContent = 'Game reset! Choose your move and click Play!';
+        }
+
+        // Number Guessing Game
+        function startGuessingGame() {
+            gameData.guessing = {
+                number: Math.floor(Math.random() * 100) + 1,
+                attempts: 0
+            };
+            document.getElementById('guessing-output').textContent = '🎮 Game started! Make your first guess.';
+            document.getElementById('guess-btn').disabled = false;
+            document.getElementById('guessing-input').value = '';
+            document.getElementById('guessing-input').focus();
+        }
+
+        function makeGuess() {
+            const guess = parseInt(document.getElementById('guessing-input').value);
+            
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                document.getElementById('guessing-output').textContent = 'Please enter a number between 1 and 100';
+                return;
+            }
+
+            gameData.guessing.attempts++;
+            
+            if (guess === gameData.guessing.number) {
+                document.getElementById('guessing-output').innerHTML = 
+                    `🎉 <strong>Congratulations!</strong> You guessed the correct number <strong>${gameData.guessing.number}</strong> in <strong>${gameData.guessing.attempts}</strong> attempts!`;
+                document.getElementById('guess-btn').disabled = true;
+            } else if (guess > gameData.guessing.number) {
+                document.getElementById('guessing-output').innerHTML = 
+                    `📈 <strong>Too high!</strong> Try again. (Attempt ${gameData.guessing.attempts})`;
+                document.getElementById('guessing-input').value = '';
+                document.getElementById('guessing-input').focus();
+            } else {
+                document.getElementById('guessing-output').innerHTML = 
+                    `📉 <strong>Too low!</strong> Try again. (Attempt ${gameData.guessing.attempts})`;
+                document.getElementById('guessing-input').value = '';
+                document.getElementById('guessing-input').focus();
+            }
+        }
+
+        // Mood Suggester
+        function suggestMood() {
+            const mood = document.getElementById('mood-select').value;
+            
+            if (!mood) {
+                document.getElementById('mood-output').textContent = 'Please select your mood first!';
+                return;
+            }
+
+            const suggestions = {
+                happy: 'You should have a nice slice of cake! 🍰',
+                sad: 'You should have a nice cup of tea and chocolate ☕🍫',
+                tired: 'You should have a big warm bowl of soup 🍲',
+                angry: 'You should have some ice cream to cool down 🍦',
+                bored: 'Make yourself something interesting. How about pasta? 🍝',
+                excited: 'Celebrate with your favorite treat! 🎉',
+                stressed: 'Try some calming herbal tea and cookies 🫖🍪'
+            };
+
+            const suggestion = suggestions[mood] || 'Just go out and buy some snacks! 🛒';
+            document.getElementById('mood-output').innerHTML = 
+                `<strong>Mood:</strong> ${mood.charAt(0).toUpperCase() + mood.slice(1)}<br><strong>Suggestion:</strong> ${suggestion}`;
+        }
+
+        // Password Checker
+        function checkPassword() {
+            const password = document.getElementById('password-input').value;
+            
+            if (!password) {
+                document.getElementById('password-output').textContent = 'Please enter a password to check';
+                return;
+            }
+
+            const hasLength = password.length >= 8;
+            const hasNumber = /\d/.test(password);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+
+            let strength = '';
+            let color = '';
+            let suggestions = [];
+
+            if (hasLength && hasNumber && hasSpecial && hasUppercase && hasLowercase) {
+                strength = '🛡️ Very Strong';
+                color = '#22c55e';
+            } else if (hasLength && hasNumber && hasSpecial) {
+                strength = '🔒 Strong';
+                color = '#3b82f6';
+            } else if (hasLength && (hasNumber || hasSpecial)) {
+                strength = '⚠️ Moderate';
+                color = '#f59e0b';
+                if (!hasNumber) suggestions.push('add numbers');
+                if (!hasSpecial) suggestions.push('add special characters');
+            } else {
+                strength = '❌ Weak';
+                color = '#ef4444';
+                if (!hasLength) suggestions.push('make it at least 8 characters long');
+                if (!hasNumber) suggestions.push('add numbers');
+                if (!hasSpecial) suggestions.push('add special characters');
+            }
+
+            if (!hasUppercase) suggestions.push('add uppercase letters');
+            if (!hasLowercase) suggestions.push('add lowercase letters');
+
+            let output = `<div style="color: ${color}; font-weight: bold; font-size: 1.3em; margin-bottom: 15px;">${strength}</div>`;
+            
+            if (suggestions.length > 0) {
+                output += `<strong>💡 Suggestions:</strong> ${suggestions.join(', ')}<br><br>`;
+            }
+
+            output += '<strong>📋 Password Criteria:</strong><br>';
+            output += `${hasLength ? '✅' : '❌'} At least 8 characters<br>`;
+            output += `${hasNumber ? '✅' : '❌'} Contains numbers<br>`;
+            output += `${hasSpecial ? '✅' : '❌'} Contains special characters<br>`;
+            output += `${hasUppercase ? '✅' : '❌'} Contains uppercase letters<br>`;
+            output += `${hasLowercase ? '✅' : '❌'} Contains lowercase letters`;
+
+            document.getElementById('password-output').innerHTML = output;
+        }
+
+        // Word Analyzer
+        function analyzeText() {
+            const text = document.getElementById('word-input').value.trim();
+            
+            if (!text) {
+                document.getElementById('word-output').textContent = 'Please enter some text to analyze';
+                return;
+            }
+
+            const vowels = 'aeiouAEIOU';
+            const consonants = 'bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ';
+            
+            let vowelCount = 0;
+            let consonantCount = 0;
+            
+            for (let char of text) {
+                if (vowels.includes(char)) vowelCount++;
+                if (consonants.includes(char)) consonantCount++;
+            }
+
+            const totalLetters = vowelCount + consonantCount;
+            const vowelPercent = totalLetters ? Math.round((vowelCount / totalLetters) * 100) : 0;
+            const consonantPercent = totalLetters ? Math.round((consonantCount / totalLetters) * 100) : 0;
+
+            // Word frequency analysis
+            const words = text.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(word => word.length > 0);
+            const wordFreq = {};
+            
+            words.forEach(word => {
+                wordFreq[word] = (wordFreq[word] || 0) + 1;
+            });
+
+            let output = `<strong>📊 Text Analysis Results:</strong><br><br>`;
+            output += `<strong>🔤 Character Analysis:</strong><br>`;
+            output += `• Vowels: <strong>${vowelCount}</strong> (${vowelPercent}%)<br>`;
+            output += `• Consonants: <strong>${consonantCount}</strong> (${consonantPercent}%)<br>`;
+            output += `• Total letters: <strong>${totalLetters}</strong><br>`;
+            output += `• Total characters: <strong>${text.length}</strong><br>`;
+            output += `• Total words: <strong>${words.length}</strong><br><br>`;
+
+            if (Object.keys(wordFreq).length > 0) {
+                output += `<strong>📝 Word Frequency (Top 10):</strong><br>`;
+                const sortedWords = Object.entries(wordFreq).sort((a, b) => b[1] - a[1]);
+                sortedWords.slice(0, 10).forEach(([word, count]) => {
+                    output += `• "<strong>${word}</strong>": ${count} time${count > 1 ? 's' : ''}<br>`;
+                });
+                
+                if (sortedWords.length > 10) {
+                    output += `<em>... and ${sortedWords.length - 10} more unique words</em>`;
+                }
+            }
+
+            document.getElementById('word-output').innerHTML = output;
+        }
+
+        // Handle Enter key for various inputs
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                switch (currentGame) {
+                    case 'temperature':
+                        convertTemperature();
+                        break;
+                    case 'fortune':
+                        askFortune();
+                        break;
+                    case 'guessing':
+                        if (!document.getElementById('guess-btn').disabled) {
+                            makeGuess();
+                        }
+                        break;
+                    case 'password':
+                        checkPassword();
+                        break;
+                    case 'word':
+                        analyzeText();
+                        break;
+                }
+            }
+        });
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            showMenu();
+        });
+    </script>
+</body>
+</html>
